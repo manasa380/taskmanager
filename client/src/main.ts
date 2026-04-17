@@ -1,4 +1,7 @@
 import './script.css'
+
+const API = "https://taskmanager-backend-77wk.onrender.com"
+
 const app = document.querySelector('#app')!
 
 const token = localStorage.getItem('token')
@@ -23,7 +26,7 @@ function showHome() {
   document.getElementById('loginPage')!.onclick = showLogin
 }
 
-// -------- SIGNUP SCREEN --------
+// -------- SIGNUP --------
 function showSignup() {
   app.innerHTML = `
     <h1>Signup 📝</h1>
@@ -35,15 +38,14 @@ function showSignup() {
     <button id="signupBtn">Signup</button>
     <p id="msg"></p>
 
-    <p>Already have an account?</p>
-    <button id="goLogin">Login</button>
+    <button id="goLogin">Already have account? Login</button>
   `
 
   document.getElementById('signupBtn')!.onclick = signup
   document.getElementById('goLogin')!.onclick = showLogin
 }
 
-// -------- LOGIN SCREEN --------
+// -------- LOGIN --------
 function showLogin() {
   app.innerHTML = `
     <h1>Login 🔐</h1>
@@ -54,8 +56,7 @@ function showLogin() {
     <button id="loginBtn">Login</button>
     <p id="msg"></p>
 
-    <p>New user?</p>
-    <button id="goSignup">Signup</button>
+    <button id="goSignup">New user? Signup</button>
   `
 
   document.getElementById('loginBtn')!.onclick = login
@@ -68,7 +69,7 @@ async function signup() {
   const email = (document.getElementById('email') as HTMLInputElement).value
   const password = (document.getElementById('password') as HTMLInputElement).value
 
-  const res = await fetch('http://localhost:5000/api/auth/signup', {
+  const res = await fetch(`${API}/api/auth/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, email, password })
@@ -83,7 +84,7 @@ async function login() {
   const email = (document.getElementById('email') as HTMLInputElement).value
   const password = (document.getElementById('password') as HTMLInputElement).value
 
-  const res = await fetch('http://localhost:5000/api/auth/login', {
+  const res = await fetch(`${API}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
@@ -131,7 +132,7 @@ async function addTask() {
 
   if (!input.value) return
 
-  await fetch('http://localhost:5000/api/tasks', {
+  await fetch(`${API}/api/tasks`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -148,7 +149,7 @@ async function addTask() {
 async function loadTasks() {
   const token = localStorage.getItem('token')
 
-  const res = await fetch('http://localhost:5000/api/tasks', {
+  const res = await fetch(`${API}/api/tasks`, {
     headers: { 'Authorization': token! }
   })
 
