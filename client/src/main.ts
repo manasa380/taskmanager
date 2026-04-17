@@ -1,7 +1,6 @@
 import './script.css'
 
-const API = "https://taskmanager-backend-77wk.onrender.com"
-
+const BASE_URL = "https://taskmanager-backend-77wk.onrender.com"
 const app = document.querySelector('#app')!
 
 const token = localStorage.getItem('token')
@@ -69,7 +68,7 @@ async function signup() {
   const email = (document.getElementById('email') as HTMLInputElement).value
   const password = (document.getElementById('password') as HTMLInputElement).value
 
-  const res = await fetch(`${API}/api/auth/signup`, {
+  const res = await fetch(`${BASE_URL}/api/auth/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, email, password })
@@ -84,7 +83,7 @@ async function login() {
   const email = (document.getElementById('email') as HTMLInputElement).value
   const password = (document.getElementById('password') as HTMLInputElement).value
 
-  const res = await fetch(`${API}/api/auth/login`, {
+  const res = await fetch(`${BASE_URL}/api/auth/login`,  {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
@@ -132,7 +131,7 @@ async function addTask() {
 
   if (!input.value) return
 
-  await fetch(`${API}/api/tasks`, {
+  await fetch(`${BASE_URL}/api/tasks`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -149,7 +148,7 @@ async function addTask() {
 async function loadTasks() {
   const token = localStorage.getItem('token')
 
-  const res = await fetch(`${API}/api/tasks`, {
+  const res = await fetch(`${BASE_URL}/api/tasks`, {
     headers: { 'Authorization': token! }
   })
 
