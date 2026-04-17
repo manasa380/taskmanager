@@ -1,8 +1,8 @@
-import './script.css'
-
 const BASE_URL = "https://taskmanager-backend-77wk.onrender.com"
-const app = document.querySelector('#app')!
 
+const app = document.querySelector('#app') as HTMLDivElement
+
+// ---------------- INIT ----------------
 const token = localStorage.getItem('token')
 
 if (token) {
@@ -11,12 +11,10 @@ if (token) {
   showHome()
 }
 
-// -------- HOME SCREEN --------
+// ---------------- HOME ----------------
 function showHome() {
   app.innerHTML = `
     <h1>Welcome 👋</h1>
-    <p>Are you a new user?</p>
-
     <button id="signupPage">Signup</button>
     <button id="loginPage">Login</button>
   `
@@ -25,10 +23,10 @@ function showHome() {
   document.getElementById('loginPage')!.onclick = showLogin
 }
 
-// -------- SIGNUP --------
+// ---------------- SIGNUP ----------------
 function showSignup() {
   app.innerHTML = `
-    <h1>Signup 📝</h1>
+    <h1>Signup</h1>
 
     <input id="name" placeholder="Name" />
     <input id="email" placeholder="Email" />
@@ -37,17 +35,17 @@ function showSignup() {
     <button id="signupBtn">Signup</button>
     <p id="msg"></p>
 
-    <button id="goLogin">Already have account? Login</button>
+    <button id="goLogin">Go to Login</button>
   `
 
   document.getElementById('signupBtn')!.onclick = signup
   document.getElementById('goLogin')!.onclick = showLogin
 }
 
-// -------- LOGIN --------
+// ---------------- LOGIN ----------------
 function showLogin() {
   app.innerHTML = `
-    <h1>Login 🔐</h1>
+    <h1>Login</h1>
 
     <input id="email" placeholder="Email" />
     <input id="password" type="password" placeholder="Password" />
@@ -55,57 +53,67 @@ function showLogin() {
     <button id="loginBtn">Login</button>
     <p id="msg"></p>
 
-    <button id="goSignup">New user? Signup</button>
+    <button id="goSignup">Go to Signup</button>
   `
 
   document.getElementById('loginBtn')!.onclick = login
   document.getElementById('goSignup')!.onclick = showSignup
 }
 
-// -------- SIGNUP FUNCTION --------
+// ---------------- SIGNUP API ----------------
 async function signup() {
   const name = (document.getElementById('name') as HTMLInputElement).value
   const email = (document.getElementById('email') as HTMLInputElement).value
   const password = (document.getElementById('password') as HTMLInputElement).value
 
-  const res = await fetch(`${BASE_URL}/api/auth/signup`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, password })
-  })
+  try {
+    const res = await fetch(`${BASE_URL}/api/auth/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password })
+    })
 
-  const data = await res.json()
-  document.getElementById('msg')!.textContent = data.message
+    const data = await res.json()
+    document.getElementById('msg')!.textContent = data.message
+  } catch {
+    document.getElementById('msg')!.textContent = "Signup failed"
+  }
 }
 
-// -------- LOGIN FUNCTION --------
+// ---------------- LOGIN API ----------------
 async function login() {
   const email = (document.getElementById('email') as HTMLInputElement).value
   const password = (document.getElementById('password') as HTMLInputElement).value
 
-  const res = await fetch(`${BASE_URL}/api/auth/login`,  {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
-  })
+  try {
+    const res = await fetch(`${BASE_URL}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    })
 
-  const data = await res.json()
+    const data = await res.json()
 
-  if (data.token) {
-    localStorage.setItem('token', data.token)
-    showDashboard()
-  } else {
-    document.getElementById('msg')!.textContent = data.message || "Login failed"
+    if (data.token) {
+      localStorage.setItem('token', data.token)
+      showDashboard()
+    } else {
+      document.getElementById('msg')!.textContent = data.message
+    }
+  } catch {
+    document.getElementById('msg')!.textContent = "Login error"
   }
 }
 
-// -------- DASHBOARD --------
+// ---------------- DASHBOARD ----------------
 function showDashboard() {
   app.innerHTML = `
     <h1>Task Manager 🚀</h1>
+
     <button id="logoutBtn">Logout</button>
 
     <br/><br/>
+
     <input id="taskInput" placeholder="Enter task" />
     <button id="addBtn">Add Task</button>
 
@@ -118,13 +126,13 @@ function showDashboard() {
   loadTasks()
 }
 
-// -------- LOGOUT --------
+// ---------------- LOGOUT ----------------
 function logout() {
   localStorage.removeItem('token')
   showHome()
 }
 
-// -------- ADD TASK --------
+// ---------------- ADD TASK ----------------
 async function addTask() {
   const input = document.getElementById('taskInput') as HTMLInputElement
   const token = localStorage.getItem('token')
@@ -132,30 +140,32 @@ async function addTask() {
   if (!input.value) return
 
   await fetch(`${BASE_URL}/api/tasks`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': token!
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
     },
     body: JSON.stringify({ title: input.value })
   })
 
-  input.value = ''
+  input.value = ""
   loadTasks()
 }
 
-// -------- LOAD TASKS --------
+// ---------------- LOAD TASKS ----------------
 async function loadTasks() {
   const token = localStorage.getItem('token')
 
   const res = await fetch(`${BASE_URL}/api/tasks`, {
-    headers: { 'Authorization': token! }
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
   })
 
   const tasks = await res.json()
 
   const list = document.getElementById('taskList')!
-  list.innerHTML = ''
+  list.innerHTML = ""
 
   tasks.forEach((task: any) => {
     const li = document.createElement('li')
